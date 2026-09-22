@@ -1,0 +1,17 @@
+# Secrets — never commit these
+.env
+.env.local
+.env*.local
+
+# Dependencies
+node_modules/
+
+# Vercel
+.vercel
+
+# Local editor/tool settings (contain your machine's file paths)
+.claude/settings.local.json
+
+# OS / editor junk
+Thumbs.db
+.DS_Store
