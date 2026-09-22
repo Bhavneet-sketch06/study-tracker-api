@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Study Tracker API</title>
+    <style>
+      :root {
+        --accent: #4f46e5;
+        --accent-dark: #4338ca;
+        --bg: #f7f8fa;
+        --card: #ffffff;
+        --text: #1f2430;
+        --muted: #6b7280;
+        --line: #e5e7eb;
+        --code-bg: #f4f5f8;
+      }
+
+      * { box-sizing: border-box; }
+
+      body {
+        margin: 0;
+        padding: 40px 16px 64px;
+        background: var(--bg);
+        color: var(--text);
+        font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+        line-height: 1.6;
+      }
+
+      main {
+        max-width: 680px;
+        margin: 0 auto;
+      }
+
+      /* ---------- header ---------- */
+      header {
+        text-align: center;
+        margin-bottom: 30px;
+      }
+
+      h1 {
+        margin: 0 0 6px;
+        font-size: 1.9rem;
+      }
+
+      header p {
+        margin: 0;
+        color: var(--muted);
+      }
+
+      /* ---------- flow strip ---------- */
+      .flow {
+        text-align: center;
+        font-size: 0.8rem;
+        color: var(--muted);
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 12px 14px;
+        margin-bottom: 30px;
+      }
+
+      .flow code {
+        font-size: 0.78rem;
+        color: var(--accent-dark);
+      }
+
+      /* ---------- endpoint cards ---------- */
+      h2 {
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+        color: var(--muted);
+        margin: 0 0 12px;
+      }
+
+      .endpoint {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 18px;
+        margin-bottom: 16px;
+      }
+
+      .route {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        flex-wrap: wrap;
+      }
+
+      .method {
+        font-family: ui-monospace, Consolas, monospace;
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        padding: 3px 8px;
+        border-radius: 5px;
+      }
+
+      .method.get { background: #eef2ff; color: #1d4ed8; }
+      .method.post { background: #ecfdf5; color: #059669; }
+
+      .path {
+        font-family: ui-monospace, Consolas, monospace;
+        font-size: 0.9rem;
+        font-weight: 600;
+      }
+
+      .desc {
+        margin: 8px 0 0;
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+
+      /* ---------- inputs ---------- */
+      .field {
+        margin-top: 14px;
+      }
+
+      label {
+        display: block;
+        font-size: 0.8rem;
+        font-weight: 600;
+        margin-bottom: 5px;
+      }
+
+      input[type="text"],
+      select {
+        width: 100%;
+        padding: 9px 11px;
+        border: 1px solid var(--line);
+        border-radius: 7px;
+        font-size: 0.9rem;
+        font-family: inherit;
+        background: #fcfcfd;
+      }
+
+      input[type="text"]:focus,
+      select:focus {
+        outline: none;
+        border-color: var(--accent);
+      }
+
+      button {
+        margin-top: 14px;
+        background: var(--accent);
+        color: #fff;
+        border: 0;
+        border-radius: 7px;
+        padding: 9px 18px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        font-family: inherit;
+        cursor: pointer;
+        transition: background 0.15s ease;
+      }
+
+      button:hover:not(:disabled) { background: var(--accent-dark); }
+      button:disabled { opacity: 0.55; cursor: not-allowed; }
+
+      /* ---------- response boxes ---------- */
+      .response {
+        margin-top: 14px;
+      }
+
+      .status {
+        font-family: ui-monospace, Consolas, monospace;
+        font-size: 0.75rem;
+        font-weight: 700;
+        margin-bottom: 5px;
+      }
+
+      .status.ok { color: #059669; }
+      .status.bad { color: #b91c1c; }
+
+      pre {
+        margin: 0;
+        padding: 12px;
+        background: var(--code-bg);
+        border: 1px solid var(--line);
+        border-radius: 7px;
+        font-family: ui-monospace, Consolas, monospace;
+        font-size: 0.78rem;
+        line-height: 1.5;
+        overflow-x: auto;
+        white-space: pre;
+      }
+
+      .hidden { display: none; }
+
+      footer {
+        text-align: center;
+        color: var(--muted);
+        font-size: 0.78rem;
+        margin-top: 26px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <main>
+      <header>
+        <h1>Study Tracker</h1>
+        <p>Simple API for tracking today's study tasks.</p>
+      </header>
+
+      <div class="flow">
+        Browser <code>&rarr;</code> HTTP request <code>&rarr;</code> Vercel serverless function
+        <code>&rarr;</code> Supabase <code>&rarr;</code> JSON response
+      </div>
+
+      <h2>Available endpoints</h2>
+
+      <!-- ---------- GET /api/today-study ---------- -->
+      <div class="endpoint">
+        <div class="route">
+          <span class="method get">GET</span>
+          <span class="path">/api/today-study</span>
+        </div>
+        <p class="desc">Returns today's study tasks and completion summary.</p>
+        <button data-send="today">Send Request</button>
+        <div class="response hidden" id="res-today">
+          <div class="status"></div>
+          <pre></pre>
+        </div>
+      </div>
+
+      <!-- ---------- POST /api/add-task ---------- -->
+      <div class="endpoint">
+        <div class="route">
+          <span class="method post">POST</span>
+          <span class="path">/api/add-task</span>
+        </div>
+        <p class="desc">
+          Adds a task for today. Sends <code>{ "title": "..." }</code> and stores it with
+          <code>completed = false</code> and today's date.
+        </p>
+        <div class="field">
+          <label for="title">Task title:</label>
+          <input
+            type="text"
+            id="title"
+            placeholder="Revise Computer Networks"
+            maxlength="200"
+            autocomplete="off"
+          />
+        </div>
+        <button data-send="add">Send POST Request</button>
+        <div class="response hidden" id="res-add">
+          <div class="status"></div>
+          <pre></pre>
+        </div>
+      </div>
+
+      <!-- ---------- GET /api/tasks ---------- -->
+      <div class="endpoint">
+        <div class="route">
+          <span class="method get">GET</span>
+          <span class="path">/api/tasks</span>
+        </div>
+        <p class="desc">Today's tasks including each task's <code>id</code>.</p>
+        <button data-send="tasks">Send Request</button>
+        <div class="response hidden" id="res-tasks">
+          <div class="status"></div>
+          <pre></pre>
+        </div>
+      </div>
+
+      <!-- ---------- GET /api/hello ---------- -->
+      <div class="endpoint">
+        <div class="route">
+          <span class="method get">GET</span>
+          <span class="path">/api/hello</span>
+        </div>
+        <p class="desc">A small test endpoint that confirms the API is running.</p>
+        <button data-send="hello">Send Request</button>
+        <div class="response hidden" id="res-hello">
+          <div class="status"></div>
+          <pre></pre>
+        </div>
+      </div>
+
+      <footer>Data stored in Supabase. Credentials stay on the server.</footer>
+    </main>
+
+    <script>
+      // Each button describes the request it should send. The browser only ever
+      // calls our own /api/... routes, so Supabase credentials stay server-side.
+      const requests = {
+        today: () => ['/api/today-study', { method: 'GET' }],
+        tasks: () => ['/api/tasks', { method: 'GET' }],
+        hello: () => ['/api/hello', { method: 'GET' }],
+        add: () => [
+          '/api/add-task',
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ title: document.getElementById('title').value.trim() }),
+          },
+        ],
+      };
+
+      function show(boxId, statusText, ok, payload) {
+        const box = document.getElementById(boxId);
+        const status = box.querySelector('.status');
+        status.textContent = statusText;
+        status.className = 'status ' + (ok ? 'ok' : 'bad');
+        box.querySelector('pre').textContent = payload;
+        box.classList.remove('hidden');
+      }
+
+      async function send(key, button) {
+        const [url, options] = requests[key]();
+        const boxId = 'res-' + (key === 'today' ? 'today' : key);
+        const label = button.textContent;
+
+        button.disabled = true;
+        button.textContent = 'Sending...';
+
+        try {
+          const res = await fetch(url, options);
+          const text = await res.text();
+          let pretty = text;
+          try {
+            pretty = JSON.stringify(JSON.parse(text), null, 2);
+          } catch (e) {
+            // Not JSON -- show the raw text so nothing is hidden.
+          }
+          show(boxId, res.status + ' ' + res.statusText, res.ok, pretty);
+        } catch (err) {
+          // Network-level failure, e.g. the server is not running.
+          show(boxId, 'Request failed', false, String(err.message || err));
+        } finally {
+          button.disabled = false;
+          button.textContent = label;
+        }
+      }
+
+      document.querySelectorAll('button[data-send]').forEach((button) => {
+        button.addEventListener('click', () => send(button.dataset.send, button));
+      });
+    </script>
+  </body>
+</html>
